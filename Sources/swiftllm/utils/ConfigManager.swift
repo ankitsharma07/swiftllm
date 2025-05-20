@@ -6,9 +6,9 @@ struct ConfigManager {
 
     init() {
         let homeDirectory = FileManager.default.homeDirectoryForCurrentUser.path
-        print("Home Director: \(homeDirectory)")
+        print("Home Directory: \(homeDirectory)")
 
-        configFilePath = "\(homeDirectory)/.swiftllm/config.json"
+        configFilePath = "\(homeDirectory)/.swift-confs/config.json"
         loadConfig()
     }
 
