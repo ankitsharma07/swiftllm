@@ -77,7 +77,7 @@ class LLMClient {
             var bodyData = Data()
 
             for try await chunk in response.body {
-                bodyData.append(Data(chunk))
+                bodyData.append(Data(buffer: chunk))
             }
 
             do {
