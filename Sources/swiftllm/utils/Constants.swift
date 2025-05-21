@@ -3,7 +3,7 @@ import Foundation
 enum APIContants {
     enum URLs {
         static let openai = "https://api.openai.com/v1/chat/completions"
-        static let gemini = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent"
+        static let gemini = "https://generativelanguage.googleapis.com/v1beta/models/"
         static let claude = "https://api.anthropic.com/v1/messages"
         static let mistral = "https://api.mistral.ai/v1/chat/completions"
     }
@@ -15,6 +15,7 @@ enum APIContants {
 
         // Google Gemini
         static let geminiPro = "gemini-pro"
+        static let geminiFlash = "gemini-2.0-flash"
 
         // Anthropic Claude
         static let claudeInstant = "claude-instant-1"

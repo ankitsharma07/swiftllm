@@ -36,6 +36,29 @@ enum LLMError: Error {
     case decodingFailed(String)
 }
 
+struct GeminiPart: Codable { let text: String }
+
+struct GeminiContent: Codable {
+    let role: String?
+    let parts: [GeminiPart]
+}
+
+struct GeminiRequest: Codable {
+    let contents: [GeminiContent]
+    let generationConfig: GenerationConfig
+    struct GenerationConfig: Codable { let temperature: Double? }
+}
+
+struct GeminiResponse: Codable {
+    struct Candidate: Codable {
+        struct Content: Codable {
+            let parts: [GeminiPart]
+        }
+        let content: Content
+    }
+    let candidates: [Candidate]
+}
+
 
 class LLMClient {
     private let httpClient: HTTPClient
@@ -55,43 +78,34 @@ class LLMClient {
             throw LLMError.invalidApiKey
         }
 
-        let gemini_url = APIContants.URLs.gemini
+        let geminiModel = APIContants.Models.geminiFlash
+        let gemini_url = "\(APIContants.URLs.gemini)\(geminiModel):generateContent?key=\(apiKey)"
 
-        let request = ChatCompletionRequest(
-            model: APIContants.Models.geminiPro,
-            messages: [Message(role: "user", content: prompt)],
-            temperature: 0.7
-        )
+        print("Gemini URL: \(gemini_url)")
+
+        let request = GeminiRequest(contents: [.init(role: "user",
+                                                parts: [.init(text: prompt)])],
+                                generationConfig: .init(temperature: 0.7))
 
         let requestData = try JSONEncoder().encode(request)
 
         var httpRequest = HTTPClientRequest(url: gemini_url)
         httpRequest.method = .POST
         httpRequest.headers.add(name: "Content-Type", value: "application/json")
-        httpRequest.headers.add(name: "Authorization", value: "Bearer \(apiKey)")
         httpRequest.body = .bytes(ByteBuffer(data: requestData))
 
         let response = try await httpClient.execute(httpRequest, timeout: .seconds(30))
 
-        if response.status == .ok {
-            var bodyData = Data()
-
-            for try await chunk in response.body {
-                bodyData.append(Data(buffer: chunk))
-            }
-
-            do {
-                let decodedResponse = try JSONDecoder().decode(ChatCompletionResponse.self, from: bodyData)
-                if let firstChoice = decodedResponse.choices.first {
-                    return firstChoice.message.content
-                } else {
-                    return "No response generated."
-                }
-            } catch {
-                throw LLMError.decodingFailed(error.localizedDescription)
-            }
-        } else {
+        guard response.status == .ok else {
             throw LLMError.requestFailed("HTTP status: \(response.status.code)")
         }
+
+        var bodyData = Data()
+        for try await chunk in response.body { bodyData.append(Data(buffer: chunk)) }
+
+        let decoded = try JSONDecoder().decode(GeminiResponse.self, from: bodyData)
+        return decoded.candidates.first?
+               .content.parts.first?
+               .text ?? "No response generated."
     }
 }
