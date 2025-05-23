@@ -89,6 +89,7 @@ class LLMClient {
 
         let requestData = try JSONEncoder().encode(request)
 
+        // MARK: - HTTP Request Setup
         var httpRequest = HTTPClientRequest(url: gemini_url)
         httpRequest.method = .POST
         httpRequest.headers.add(name: "Content-Type", value: "application/json")
