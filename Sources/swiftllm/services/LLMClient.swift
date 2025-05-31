@@ -7,6 +7,8 @@ import NIOHTTP1
 // Multiple clients
 // Gemini, Mistral, OpenAI, Claude
 
+// Make a controller to control different chats with different LLMs
+
 struct Message: Codable {
     let role: String
     let content: String
