@@ -4,34 +4,6 @@ import NIOCore
 import NIOFoundationCompat
 import NIOHTTP1
 
-// Multiple clients
-// Gemini, Mistral, OpenAI, Claude
-
-// Make a controller to control different chats with different LLMs
-
-struct Message: Codable {
-    let role: String
-    let content: String
-}
-
-struct ChatCompletionRequest: Codable {
-    let model: String
-    let messages: [Message]
-    let temperature: Double?
-}
-
-struct ChatCompletionResponse: Codable {
-    struct Choice: Codable {
-            struct Message: Codable {
-                let role: String
-                let content: String
-            }
-            let message: Message
-        }
-
-    let choices: [Choice]
-}
-
 enum LLMError: Error {
     case invalidApiKey
     case requestFailed(String)
