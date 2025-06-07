@@ -19,7 +19,7 @@ struct SwiftLLMApp {
             print("Sending prompt: \"\(prompt)\"")
 
             let response = try await llmClient.generateResponse(prompt: prompt)
-
+x
             print("\nResponse from LLM:")
             print("-------------------")
             print(response)
