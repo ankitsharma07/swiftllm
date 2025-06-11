@@ -12,11 +12,13 @@ enum LLMProvider: String, CaseIterable {
     case claude = "claude"
 }
 
-// This handles different chat format across the clients
-
-// OpenAI and Mistral have similar chat completion API
-// Anthropic and Gemini differs
-
+enum LLMError: Error {
+    case invalidAPIKey
+    case requestFailed(String)
+    case decodingFailed(String)
+    case invalidProvider
+    case invalidResponse
+}
 
 // OpenAI
 
