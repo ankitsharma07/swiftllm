@@ -12,7 +12,7 @@ enum LLMProvider: String, CaseIterable {
     case claude = "claude"
 }
 
-enum LLMError: Error {
+enum MultiLLMError: Error {
     case invalidAPIKey
     case requestFailed(String)
     case decodingFailed(String)
@@ -21,9 +21,35 @@ enum LLMError: Error {
 }
 
 // OpenAI
+struct OpenAIMessage: Codable {
+    let role: String
+    let content: String
+}
 
+struct OpenAIRequest: Codable {
+    let model: String
+    let messages: [OpenAIMessage]
+    let temperature: Double?
+    let maxTokens: Int?
+    let topP: Double?
+}
 
-// Mistral
+struct OpenAIResponse: Codable {
+    struct Choice: Codable {
+        struct Message: Codable {
+            let role: String
+            let content: String
+        }
+        let message: Message
+    }
+    let choices: [Choice]
+}
+
+// Mistral (Similar to OpenAI)
+typealias MistralMessage = OpenAIMessage
+typealias MistralRequest = OpenAIRequest
+typealias MistralResponse = OpenAIResponse
+
 
 
 // Gemini
